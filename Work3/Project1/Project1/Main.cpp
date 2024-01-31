@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <initializer_list>
+#include <array>
 
 namespace std {
     template<typename T>
@@ -9,21 +10,42 @@ namespace std {
         int count = 8;
         T* arr = new T[count]{};
         void arr_size() {
-            T* arr2;
-            arr2 = new T[count * 2];
+            T* temp_arr = new T[count * 2];
             for (int i = 0; i < count; ++i) {
-                arr2[i] = arr[i];
+                temp_arr[i] = arr[i];
             }
             delete[] arr;
-            arr = new T[count * 2];
-            arr = std::move(arr2);
+            arr = temp_arr;
+            temp_arr = nullptr;
             count *= 2;
+        }
+        int bit(int size) {
+            while ((size / 8) != 1) {
+                ++size;
+            }
+            return size * 2;
         }
     public:
         vector() {};
-        vector(const std::initializer_list<T>&& mas) {
+        vector(const vector<T>& copy) {
+            iterator = 0;
+            if (copy.size() > count) {
+                delete[] arr;
+                count = bit(copy.size());
+                arr = new T[count];
+            }
+            for (auto n : copy) {
+                arr[iterator] = n;
+                ++iterator;
+            }
+        }
+        vector(const T& n) {
+            arr[iterator] = n;
+            ++iterator;
+        }
+        vector(const std::initializer_list<T>& mas) {
             if (count <= mas.size()) {
-                count = mas.size() * 2;
+                count = bit(mas.size());
                 delete[] arr;
                 arr = new T[count];
             }
@@ -34,12 +56,12 @@ namespace std {
         }
         vector(int n) {
             if (n > count) {
-                count = n * 2;
+                count = bit(n);
                 delete[] arr;
                 arr = new T[count];
             }
         }
-        vector(const T& mas) {
+        vector(const std::array<T, 10>& mas) {
             iterator = 0;
             if (mas.size() >= sizeof(arr)) {
                 arr_size(mas.size());
@@ -49,14 +71,26 @@ namespace std {
                 ++iterator;
             }
         }
-        T at(int i) {
-            if (i < count && i >= 0) {
-                return arr[i];
+        vector<T> operator= (const vector<T>& vec) {
+            iterator = 0;
+            if (count < vec.size()) {
+                delete[] arr;
+                count = bit(vec.size());
+                arr = new T[count];
             }
-            else {
-                throw std::out_of_range("Out of range!");
+            for (auto n : vec) {
+                arr[iterator] = n;
+                ++iterator;
             }
         }
+            T at(int i) {
+                if (i < iterator && i >= 0) {
+                    return arr[i];
+                }
+                else {
+                    throw std::out_of_range("Out of range!");
+                }
+            }
         void push_back(T n) {
             if (iterator > (count - static_cast<int>(count / 3))) {
                 arr_size();
@@ -84,17 +118,27 @@ namespace std {
 }
 
 int main() {
-    std::vector<char> v;
-    std::string s;
-    std::cin >> s;
-    for (char n : s) {
-        v.push_back(n);
+        std::vector<char> v;
+        std::vector<char> ch('f');
+        std::string s;
+        std::cin >> s;
+        for (char n : s) {
+            v.push_back(n);
+        }
+        v.push_back('D');
+        for (char n : v) {
+            std::cout << n << ' ';
+        }
+        std::cout << std::endl;
+        for (auto d : ch) {
+            std::cout << d << ' ';
+        }
+        std::cout << v.size() << '\t' << v.capacity();
+        try{
+        std::cout << v.at(50);
     }
-    v.push_back('D');
-    for (char n : v) {
-        std::cout << n << ' ';
+    catch (const std::out_of_range& out) {
+        std::cerr << out.what();
     }
-    std::cout << std::endl;
-    std::cout << v.size() << '\t' << v.capacity();
     return 0;
 }
