@@ -71,15 +71,15 @@ namespace std {
                 ++iterator;
             }
         }
-        vector<T> operator= (const vector<T>& vec) {
+            void operator= (const vector<T>& vec) {
             iterator = 0;
             if (count < vec.size()) {
                 delete[] arr;
                 count = bit(vec.size());
                 arr = new T[count];
             }
-            for (auto n : vec) {
-                arr[iterator] = n;
+            for (auto n = vec.begin(); n < vec.end(); ++n) {
+                arr[iterator] = *n;
                 ++iterator;
             }
         }
@@ -98,19 +98,19 @@ namespace std {
             arr[iterator] = n;
             ++iterator;
         }
-        int size() {
+        int size() const {
             return iterator;
         }
-        int capacity() {
+        int capacity() const {
             return count;
         }
         ~vector() {
             delete[] arr;
         }
-        auto begin() {
+        auto begin() const {
             return &arr[0];
         }
-        auto end() {
+        auto end() const {
             return &arr[iterator];
         }
 
@@ -119,7 +119,7 @@ namespace std {
 
 int main() {
         std::vector<char> v;
-        std::vector<char> ch('f');
+        std::vector<char> ch;
         std::string s;
         std::cin >> s;
         for (char n : s) {
@@ -130,6 +130,7 @@ int main() {
             std::cout << n << ' ';
         }
         std::cout << std::endl;
+        ch = v;
         for (auto d : ch) {
             std::cout << d << ' ';
         }
